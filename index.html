@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>hexclock</title>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        p  {
+            font-size: 5em;
+            font-family: "Roboto Mono";
+        }
+
+        #time {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .button {
+            position: fixed;
+            bottom: 20px;
+            padding: 10px 16px;
+            cursor: pointer;
+            width: 6vw;
+            max-width: 25px;
+        }
+
+        #fullscreenBtn {
+            right: 20px;
+        }
+
+        #githubBtn {
+            left: 20px;
+        }
+    </style>
+</head>
+
+</html>
+
+<body>
+    <p id="time"></p>
+
+    <img id="fullscreenBtn" class="button" onclick="toggleFullscreen();">
+    <a href="https://github.com/sdushantha/hexclock"><img id="githubBtn" class="button" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNGNUY1RkEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1naXRodWItaWNvbiBsdWNpZGUtZ2l0aHViIj48cGF0aCBkPSJNMTUgMjJ2LTRhNC44IDQuOCAwIDAgMC0xLTMuNWMzIDAgNi0yIDYtNS41LjA4LTEuMjUtLjI3LTIuNDgtMS0zLjUuMjgtMS4xNS4yOC0yLjM1IDAtMy41IDAgMC0xIDAtMyAxLjUtMi42NC0uNS01LjM2LS41LTggMEM2IDIgNSAyIDUgMmMtLjMgMS4xNS0uMyAyLjM1IDAgMy41QTUuNDAzIDUuNDAzIDAgMCAwIDQgOWMwIDMuNSAzIDUuNSA2IDUuNS0uMzkuNDktLjY4IDEuMDUtLjg1IDEuNjUtLjE3LjYtLjIyIDEuMjMtLjE1IDEuODV2NCIvPjxwYXRoIGQ9Ik05IDE4Yy00LjUxIDItNS0yLTctMiIvPjwvc3ZnPg=="></a>
+</body>
+
+<script>
+    const enterFullscreenIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNGNUY1RkEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tYXhpbWl6ZS1pY29uIGx1Y2lkZS1tYXhpbWl6ZSI+PHBhdGggZD0iTTggM0g1YTIgMiAwIDAgMC0yIDJ2MyIvPjxwYXRoIGQ9Ik0yMSA4VjVhMiAyIDAgMCAwLTItMmgtMyIvPjxwYXRoIGQ9Ik0zIDE2djNhMiAyIDAgMCAwIDIgMmgzIi8+PHBhdGggZD0iTTE2IDIxaDNhMiAyIDAgMCAwIDItMnYtMyIvPjwvc3ZnPg==';
+    const exitFullscreenIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNGNUY1RkEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1taW5pbWl6ZS1pY29uIGx1Y2lkZS1taW5pbWl6ZSI+PHBhdGggZD0iTTggM3YzYTIgMiAwIDAgMS0yIDJIMyIvPjxwYXRoIGQ9Ik0yMSA4aC0zYTIgMiAwIDAgMS0yLTJWMyIvPjxwYXRoIGQ9Ik0zIDE2aDNhMiAyIDAgMCAxIDIgMnYzIi8+PHBhdGggZD0iTTE2IDIxdi0zYTIgMiAwIDAgMSAyLTJoMyIvPjwvc3ZnPg==';
+
+    function currentTime(){
+        const pad = num => String(num).padStart(2, '0')
+        const now = new Date();
+        const hours = pad(now.getHours())
+        const minutes = pad(now.getMinutes())
+        const seconds = pad(now.getSeconds())
+
+        const hex = `#${hours}${minutes}${seconds}`
+
+        document.body.style.backgroundColor = hex;
+        document.getElementById('time').textContent = hex
+        document.getElementById('time').style.color = '#F5F5FA';
+        setTimeout(currentTime, 1000);
+    }
+
+    function updateFullscreenIcon(){
+        const fullscreenBtn = document.getElementById('fullscreenBtn')
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+        fullscreenBtn.src = isFullscreen ? exitFullscreenIcon: enterFullscreenIcon;
+    }
+
+    function toggleFullscreen(){
+        const elem = document.documentElement;
+        if (document.fullscreenElement || document.webkitFullscreenElement){
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        } else {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            }
+        }
+    }
+
+    currentTime();
+    updateFullscreenIcon();
+
+    window.addEventListener('keydown', (e) => e.key == 'f' && toggleFullscreen());
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+
+    let timer;
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const githubBtn = document.getElementById('githubBtn');
+
+    fullscreenBtn.style.display = 'none';
+    githubBtn.style.display = 'none';
+    document.body.style.cursor = 'none';
+
+    window.addEventListener('mousemove', () => {
+        fullscreenBtn.style.display = 'block';
+        githubBtn.style.display = 'block';
+        document.body.style.cursor = 'default';
+
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            fullscreenBtn.style.display = 'none';
+            githubBtn.style.display = 'none';
+            document.body.style.cursor = 'none';
+        }, 3000);
+    });
+</script>
+
