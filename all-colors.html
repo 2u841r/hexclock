@@ -72,34 +72,7 @@
 
     .color-cell {
         aspect-ratio: 1;
-        position: relative;
         cursor: pointer;
-        transition: transform 0.1s ease, z-index 0.1s ease;
-    }
-
-    .color-cell:hover {
-        transform: scale(1.5);
-        z-index: 5;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    }
-
-    .color-label {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.7);
-        color: #fff;
-        font-size: 0.6rem;
-        padding: 2px 4px;
-        text-align: center;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        pointer-events: none;
-    }
-
-    .color-cell:hover .color-label {
-        opacity: 1;
     }
 
     @media (max-width: 768px) {
@@ -137,6 +110,21 @@ function hexColorFromTime(h, m, s) {
     return `#${pad(h)}${pad(m)}${pad(s)}`;
 }
 
+// Use event delegation for better performance (handles both click and touch)
+container.addEventListener("click", handleCellClick);
+container.addEventListener("touchend", handleCellClick);
+
+function handleCellClick(e) {
+    const cell = e.target.closest(".color-cell");
+    if (cell) {
+        e.preventDefault();
+        const hex = cell.dataset.hex;
+        const time = cell.dataset.time;
+        alert(`${hex}\n${time}`);
+    }
+}
+
+// Use document fragments for faster DOM insertion
 function createColorCell(h, m, s) {
     const hex = hexColorFromTime(h, m, s);
     const time = `${pad(h)}:${pad(m)}:${pad(s)}`;
@@ -144,18 +132,16 @@ function createColorCell(h, m, s) {
     const cell = document.createElement("div");
     cell.className = "color-cell";
     cell.style.backgroundColor = hex;
-    cell.setAttribute("title", `${hex} - ${time}`);
-    
-    const label = document.createElement("div");
-    label.className = "color-label";
-    label.textContent = hex.toUpperCase();
-    cell.appendChild(label);
+    cell.dataset.hex = hex.toUpperCase();
+    cell.dataset.time = time;
     
     return cell;
 }
 
 // Generate all colors organized by hour
+// Use document fragments to batch DOM operations
 for (let h = 0; h < 24; h++) {
+    const hourFragment = document.createDocumentFragment();
     const hourSection = document.createElement("div");
     hourSection.className = "hour-section";
     
@@ -166,19 +152,22 @@ for (let h = 0; h < 24; h++) {
     
     // For each minute (0-59)
     for (let m = 0; m < 60; m++) {
+        const rowFragment = document.createDocumentFragment();
         const minuteRow = document.createElement("div");
         minuteRow.className = "minute-row";
         
         // For each second (0-59)
         for (let s = 0; s < 60; s++) {
             const cell = createColorCell(h, m, s);
-            minuteRow.appendChild(cell);
+            rowFragment.appendChild(cell);
         }
         
+        minuteRow.appendChild(rowFragment);
         hourSection.appendChild(minuteRow);
     }
     
-    container.appendChild(hourSection);
+    hourFragment.appendChild(hourSection);
+    container.appendChild(hourFragment);
 }
 </script>
 
