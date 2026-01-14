@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>All HexClock Colors – 24×60×60</title>
+<link rel="icon" href="https://fav.farm/⏱️" />
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: system-ui, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        padding: 16px;
+        background: #000;
+        color: #fff;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #333;
+    }
+
+    .header h1 {
+        margin: 0 0 8px 0;
+        font-size: 2rem;
+    }
+
+    .header p {
+        margin: 0;
+        opacity: 0.7;
+        font-size: 0.9rem;
+    }
+
+    .header a {
+        color: #4a9eff;
+        text-decoration: none;
+        margin-top: 12px;
+        display: inline-block;
+    }
+
+    .header a:hover {
+        text-decoration: underline;
+    }
+
+    .hour-section {
+        margin-bottom: 32px;
+    }
+
+    .hour-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        padding: 8px;
+        background: #111;
+        border-radius: 6px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .minute-row {
+        display: grid;
+        grid-template-columns: repeat(60, 1fr);
+        gap: 1px;
+        margin-bottom: 1px;
+    }
+
+    .color-cell {
+        aspect-ratio: 1;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.1s ease, z-index 0.1s ease;
+    }
+
+    .color-cell:hover {
+        transform: scale(1.5);
+        z-index: 5;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .color-label {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+    }
+
+    .color-cell:hover .color-label {
+        opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+        .minute-row {
+            grid-template-columns: repeat(30, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .minute-row {
+            grid-template-columns: repeat(15, 1fr);
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>All HexClock Colors</h1>
+    <p>24 hours × 60 minutes × 60 seconds = 86,400 colors</p>
+    <a href="index.html">← Back to Clock</a>
+</div>
+
+<div id="container"></div>
+
+<script>
+const container = document.getElementById("container");
+
+function pad(n) {
+    return String(n).padStart(2, "0");
+}
+
+function hexColorFromTime(h, m, s) {
+    return `#${pad(h)}${pad(m)}${pad(s)}`;
+}
+
+function createColorCell(h, m, s) {
+    const hex = hexColorFromTime(h, m, s);
+    const time = `${pad(h)}:${pad(m)}:${pad(s)}`;
+    
+    const cell = document.createElement("div");
+    cell.className = "color-cell";
+    cell.style.backgroundColor = hex;
+    cell.setAttribute("title", `${hex} - ${time}`);
+    
+    const label = document.createElement("div");
+    label.className = "color-label";
+    label.textContent = hex.toUpperCase();
+    cell.appendChild(label);
+    
+    return cell;
+}
+
+// Generate all colors organized by hour
+for (let h = 0; h < 24; h++) {
+    const hourSection = document.createElement("div");
+    hourSection.className = "hour-section";
+    
+    const hourTitle = document.createElement("div");
+    hourTitle.className = "hour-title";
+    hourTitle.textContent = `Hour ${pad(h)}:00:00 - ${pad(h)}:59:59`;
+    hourSection.appendChild(hourTitle);
+    
+    // For each minute (0-59)
+    for (let m = 0; m < 60; m++) {
+        const minuteRow = document.createElement("div");
+        minuteRow.className = "minute-row";
+        
+        // For each second (0-59)
+        for (let s = 0; s < 60; s++) {
+            const cell = createColorCell(h, m, s);
+            minuteRow.appendChild(cell);
+        }
+        
+        hourSection.appendChild(minuteRow);
+    }
+    
+    container.appendChild(hourSection);
+}
+</script>
+
+</body>
+</html>
